@@ -1,0 +1,36 @@
+type: map
+mapping:
+  "path":
+    type: str
+    required: false
+  "yanks":
+    required: true
+    type: seq
+    sequence:
+        - type: map
+          mapping:
+            "alias":
+                type: str
+                required: false
+            "vcs":
+                type: str
+                enum:
+                    - git
+                required: true
+            "repo":
+                type: str
+                required: true
+            "version":
+                required: true
+                type: map
+                mapping:
+                    "type": 
+                        required: true
+                        type: str
+                        enum:
+                            - tag
+                            - branch
+                            - commit
+                    "value":
+                        type: str
+                        required: true

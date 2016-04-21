@@ -1,0 +1,53 @@
+#! /usr/bin/env ruby
+
+require 'optparse'
+require 'kwalify'
+require 'fileutils'
+require_relative '../lib/yank'
+
+yank_file = '.yank'
+yank_target = './target'
+
+OptionParser.new do |opts|
+	opts.banner = "Usage: #{__FILE__} [options]\n\nOptions:\n"
+
+	opts.on('-h', '--help', 'Prints usage.'){
+		puts opts
+		exit 0
+	}
+
+	opts.on('-f', '--file FILE', "Yank file to use, defaults to '.yank'"){|v| yank_file = v}
+	opts.on('-t', '--target TARGET', 'Directory to install yanks to'){|v| yank_target = v}
+end.parse!
+
+begin
+	# Load the yank file
+	unless File.exists?(yank_file)
+		raise Yank::YankException.new("missing '#{yank_file}' file.")
+	end
+
+	FileUtils.rm_rf(Dir[File.join(yank_target, '*')])
+
+	# For now just default to using the .yank file for parameters
+	schema    = Kwalify::Yaml.load_file("#{File.join(File.dirname(__FILE__), '..', 'lib', 'yank.kwalify')}")
+	validator = Kwalify::Validator.new(schema)
+	document  = Kwalify::Yaml.load_file(yank_file)
+	errors    = validator.validate(document)
+
+	unless errors.empty?
+		raise Yank::YankException.new("unable to validate '#{yank_file}' file: #{errors.join('\n')}.")
+	end
+
+	# Check the yank target directory exists
+	unless File.exists?(yank_target)
+		raise Yank::YankException.new("target directory is missing #{yank_target}.")
+	end
+
+	yank = Yank.process(document, yank_target)
+rescue Yank::YankException => e
+	puts "ERROR: #{e.message}"
+	exit e.exit_code
+end
+
+puts "Yank successful."
+exit 0
