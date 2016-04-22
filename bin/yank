@@ -1,12 +1,17 @@
 #! /usr/bin/env ruby
 
+require 'logger'
 require 'optparse'
 require 'kwalify'
 require 'fileutils'
 require_relative '../lib/yank'
+require_relative '../lib/logging'
+
+include Yank::Logging
 
 yank_file = '.yank'
 yank_target = './target'
+$yank_debug = nil
 
 OptionParser.new do |opts|
 	opts.banner = "Usage: #{__FILE__} [options]\n\nOptions:\n"
@@ -18,6 +23,7 @@ OptionParser.new do |opts|
 
 	opts.on('-f', '--file FILE', "Yank file to use, defaults to '.yank'"){|v| yank_file = v}
 	opts.on('-t', '--target TARGET', 'Directory to install yanks to'){|v| yank_target = v}
+	opts.on('-d', '--debug', 'Turn on debug logging'){|v| $yank_debug = Logger::DEBUG}
 end.parse!
 
 begin
@@ -26,7 +32,9 @@ begin
 		raise Yank::YankException.new("missing '#{yank_file}' file.")
 	end
 
-	FileUtils.rm_rf(Dir[File.join(yank_target, '*')])
+	files_to_remove = Dir[File.join(yank_target, '*')]
+	logger.debug("removing previous yanks: #{files_to_remove}")
+	FileUtils.rm_rf(files_to_remove)
 
 	# For now just default to using the .yank file for parameters
 	schema    = Kwalify::Yaml.load_file("#{File.join(File.dirname(__FILE__), '..', 'lib', 'yank.kwalify')}")
@@ -43,7 +51,7 @@ begin
 		raise Yank::YankException.new("target directory is missing #{yank_target}.")
 	end
 
-	yank = Yank.process(document, yank_target)
+	yank = Yank::Yank.new.install(document, yank_target)
 rescue Yank::YankException => e
 	puts "ERROR: #{e.message}"
 	exit e.exit_code
