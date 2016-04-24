@@ -3,12 +3,14 @@ require_relative '../logging'
 
 module Yank
 	class Git
+		attr_reader :repo_name
+
 		include ::Yank::Logging
 
 		def initialize(repo_name, repo, version)
 			git = `which git`
 			if git.nil? or git.empty?
-				raise YankException.new("git must be installed and on the PATH.")
+				raise ::Yank::YankException.new("git must be installed and on the PATH.")
 			end
 
 			@repo = repo

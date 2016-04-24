@@ -2,7 +2,6 @@
 
 require 'logger'
 require 'optparse'
-require 'kwalify'
 require 'fileutils'
 require_relative '../lib/yank'
 require_relative '../lib/logging'
@@ -37,21 +36,14 @@ begin
 	FileUtils.rm_rf(files_to_remove)
 
 	# For now just default to using the .yank file for parameters
-	schema    = Kwalify::Yaml.load_file("#{File.join(File.dirname(__FILE__), '..', 'lib', 'yank.kwalify')}")
-	validator = Kwalify::Validator.new(schema)
-	document  = Kwalify::Yaml.load_file(yank_file)
-	errors    = validator.validate(document)
-
-	unless errors.empty?
-		raise Yank::YankException.new("unable to validate '#{yank_file}' file: #{errors.join('\n')}.")
-	end
+	yanks = Yank.parse_yanks(yank_file)
 
 	# Check the yank target directory exists
 	unless File.exists?(yank_target)
 		raise Yank::YankException.new("target directory is missing #{yank_target}.")
 	end
 
-	yank = Yank::Yank.new.install(document, yank_target)
+	Yank::Yank.new.install(yanks, yank_target)
 rescue Yank::YankException => e
 	puts "ERROR: #{e.message}"
 	exit e.exit_code

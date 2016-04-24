@@ -9,6 +9,10 @@ mapping:
     sequence:
         - type: map
           mapping:
+            "recurse":
+                type: bool
+                required: false
+                default: true
             "alias":
                 type: str
                 required: false

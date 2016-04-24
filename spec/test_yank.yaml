@@ -1,18 +1,8 @@
 yanks:
   - vcs: git
-    alias: c_branch
-    repo: https://github.com/jelathro/C.git
-    version:
-      type: branch
-      value: master
-  - vcs: git
-    alias: c_commit
-    repo: https://github.com/jelathro/C.git
-    version:
-      type: commit
-      value: a99ecd727f7e84a623d668681ea812f681c63eeb
-  - vcs: git
+    alias: emd
+    recurse: true
     repo: https://github.com/go-emd/emd.git
     version:
-      type: tag
-      value: v1.0.0
+      type: branch
+      value: feature/yank
