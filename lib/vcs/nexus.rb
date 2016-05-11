@@ -19,7 +19,7 @@ module Yank
 
 		def install(dir)
 			logger.debug("Preparing nexus client download from #{@repo}...")
-			client = Nexus::Client.new(@repo, nil, false, false, logger)
+			client = ::Nexus::Client.new(@repo, nil, false, false, logger)
 
 			if @version["type"] == "gav"
 				client.download_gav("#{dir}/#{@name}", "#{@version["value"]}")

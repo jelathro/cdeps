@@ -1,8 +1,8 @@
 yanks:
   - vcs: nexus
-    alias: emd
+    alias: ant
     recurse: false
-    repo: http://maven.apache.org
+    repo: https://repository.jboss.org/nexus
     version:
       type: gav
-      value: org.glassfish.main.external:ant:4.0
+      value: org.glassfish.main.external:ant:4.0:central::jar

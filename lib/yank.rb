@@ -1,6 +1,4 @@
 require 'kwalify'
-require_relative 'vcs/git'
-require_relative 'vcs/nexus'
 require_relative 'yank_exception'
 require_relative 'logging'
 
@@ -38,8 +36,10 @@ module Yank
 
 			case yank["vcs"]
 			when 'git'
+				require_relative 'vcs/git'
 				vcs = ::Yank::Git.new(yank["alias"], yank["repo"], yank["version"])
 			when 'nexus'
+				require_relative 'vcs/nexus'
 				vcs = ::Yank::Nexus.new(yank["alias"], yank["repo"], yank["version"])
 			end
 
