@@ -11,4 +11,6 @@ Gem::Specification.new do |s|
 	s.executables   = ['yank']
 	s.require_paths = ['lib']
 	s.add_runtime_dependency 'kwalify', '~> 0.7.2'
+	s.add_dependency 'nexus_client', '~> 0.3.0'
 end
+`

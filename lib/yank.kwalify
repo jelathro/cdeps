@@ -20,6 +20,7 @@ mapping:
                 type: str
                 enum:
                     - git
+                    - nexus
                 required: true
             "repo":
                 type: str
@@ -35,6 +36,7 @@ mapping:
                             - tag
                             - branch
                             - commit
+                            - gav
                     "value":
                         type: str
                         required: true

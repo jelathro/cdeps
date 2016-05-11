@@ -1,5 +1,6 @@
 require 'kwalify'
 require_relative 'vcs/git'
+require_relative 'vcs/nexus'
 require_relative 'yank_exception'
 require_relative 'logging'
 
@@ -12,7 +13,7 @@ module Yank
 				logger.debug("verifying yank: #{yank}")
 				vcs = get_vcs(yank)
 
-				if ::Yank.yank_exists?(yank["alias"].nil?? vcs.repo_name: yank["alias"], target)
+				if ::Yank.yank_exists?(yank["alias"].nil?? vcs.name: yank["alias"], target)
 					logger.debug("yank already installed, skipping")
 					next
 				end
@@ -21,7 +22,7 @@ module Yank
 				vcs.install(target)
 
 				if yank["recurse"]
-					yank_file = ::Yank.get_yanks_file(target, yank["alias"].nil?? vcs.repo_name: yank["alias"])
+					yank_file = ::Yank.get_yanks_file(target, yank["alias"].nil?? vcs.name: yank["alias"])
 
 					return if yank_file.nil?
 
@@ -38,6 +39,8 @@ module Yank
 			case yank["vcs"]
 			when 'git'
 				vcs = ::Yank::Git.new(yank["alias"], yank["repo"], yank["version"])
+			when 'nexus'
+				vcs = ::Yank::Nexus.new(yank["alias"], yank["repo"], yank["version"])
 			end
 
 			if vcs.nil?
